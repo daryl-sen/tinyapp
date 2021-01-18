@@ -1,15 +1,30 @@
 // imports
 const express = require("express");
+const bodyParser = require("body-parser");
 
 // configure app
 const PORT = 8080;
 const app = express();
 app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+function generateRandomString(stringLength) {
+  const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
+  let output = '';
+
+  // generate random number between 1-36
+  for (let i = 0; i < stringLength; i++) {
+    output += randomChars[Math.floor(Math.random() * 36)];
+  }
+
+  return output;
+
+}
 
 /* *** ROUTES ******************************************** */
 
@@ -29,6 +44,14 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
+
+
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 
 
 app.get("/hello", (req, res) => {
