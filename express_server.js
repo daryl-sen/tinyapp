@@ -36,6 +36,12 @@ app.get("/hello", (req, res) => {
 });
 
 
+// must be placed BEFORE the dynamic route with /urls/:shortURL
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+
 
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
