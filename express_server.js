@@ -44,7 +44,6 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(6);
-  console.log(shortURL);
   urlDatabase[shortURL] = longURL;
   // https://expressjs.com/en/guide/routing.html
   res.redirect(`/urls/${shortURL}`);
@@ -68,6 +67,17 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+});
+
+
+
+app.get("/u/:shortURL", (req, res) => {
+  // console.log(req);
+  const target = urlDatabase[req.params.shortURL];
+  if (target === undefined) {
+    return res.redirect('/');
+  }
+  res.redirect(target);
 });
 
 
