@@ -17,9 +17,9 @@ function generateRandomString(stringLength) {
   const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
   let output = '';
 
-  // generate random number between 1-36
+  // generate random number between 1 to the length of randomChars
   for (let i = 0; i < stringLength; i++) {
-    output += randomChars[Math.floor(Math.random() * 36)];
+    output += randomChars[Math.floor(Math.random() * randomChars.length)];
   }
 
   return output;
@@ -34,12 +34,6 @@ app.get("/", (req, res) => {
 
 
 
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-
-
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
@@ -48,8 +42,12 @@ app.get("/urls", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString(6);
+  console.log(shortURL);
+  urlDatabase[shortURL] = longURL;
+  // https://expressjs.com/en/guide/routing.html
+  res.redirect(`/urls/${shortURL}`);
 });
 
 
