@@ -45,6 +45,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase);
   // https://expressjs.com/en/guide/routing.html
   res.redirect(`/urls/${shortURL}`);
 });
