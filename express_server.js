@@ -38,6 +38,15 @@ function generateRandomString(stringLength) {
   return output;
 }
 
+function checkUser(email) {
+  for (let userID in users) {
+    if (users[userID].email === email) {
+      return true; 
+    }
+  }
+  return false; // true -> email in use, false -> email not in use
+}
+
 /* *** ROUTES ******************************************** */
 
 app.get("/", (req, res) => {
@@ -138,13 +147,22 @@ app.post('/register', (req, res) => {
     user: users[req.cookies["user_id"]],
     urls: urlDatabase
   };
-  const newUserID = generateRandomString(6);
-  users[newUserID] = {
-    id: newUserID,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.cookie('user_id', newUserID);
+  if (!req.body.email || !req.body.password) {
+    console.log('No email or password provided');
+  } else if (checkUser(req.body.email)) {
+    console.log('Email address already in use');
+    console.log(users);
+  } else {
+    const newUserID = generateRandomString(6);
+    users[newUserID] = {
+      id: newUserID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie('user_id', newUserID);
+    console.log(users);
+  }
+
   res.redirect('/urls');
 });
 
