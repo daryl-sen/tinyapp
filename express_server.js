@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     urls: urlDatabase
   };
   res.render('urls_index', templateVars);
@@ -69,7 +69,7 @@ app.post("/urls", (req, res) => {
 // must be placed BEFORE the dynamic route with /urls/:shortURL
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
 });
@@ -79,7 +79,7 @@ app.get("/urls/new", (req, res) => {
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -124,7 +124,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
 
 app.get('/register', (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     urls: urlDatabase
   };
   res.render('urls_register', templateVars);
@@ -135,7 +135,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
     urls: urlDatabase
   };
   const newUserID = generateRandomString(6);
@@ -144,7 +144,7 @@ app.post('/register', (req, res) => {
     email: req.body.email,
     password: req.body.password
   };
-  res.cookie('username', newUserID);
+  res.cookie('user_id', newUserID);
   res.redirect('/urls');
 });
 
@@ -152,7 +152,7 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
   const username = req.body.username;
-  res.cookie('username', username)
+  res.cookie('user_id', username)
   res.redirect('/urls');
 });
 
@@ -160,7 +160,7 @@ app.post('/login', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
