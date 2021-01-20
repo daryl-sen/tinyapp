@@ -15,17 +15,27 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 function generateRandomString(stringLength) {
   const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
   let output = '';
-
   // generate random number between 1 to the length of randomChars
   for (let i = 0; i < stringLength; i++) {
     output += randomChars[Math.floor(Math.random() * randomChars.length)];
   }
-
   return output;
-
 }
 
 /* *** ROUTES ******************************************** */
@@ -117,7 +127,25 @@ app.get('/register', (req, res) => {
     username: req.cookies["username"],
     urls: urlDatabase
   };
-  res.render('urls_register', templateVars)
+  res.render('urls_register', templateVars);
+});
+
+
+
+
+app.post('/register', (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  const newUserID = generateRandomString(6);
+  users[newUserID] = {
+    id: newUserID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('username', newUserID);
+  res.redirect('/urls');
 });
 
 
