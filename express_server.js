@@ -41,7 +41,7 @@ function generateRandomString(stringLength) {
 function checkUser(email) {
   for (let userID in users) {
     if (users[userID].email === email) {
-      return true; 
+      return users[userID]; 
     }
   }
   return false; // true -> email in use, false -> email not in use
@@ -168,9 +168,29 @@ app.post('/register', (req, res) => {
 
 
 
+app.get('/login', (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+    urls: urlDatabase
+  };  
+  res.render('urls_login', templateVars);
+});
+
+
+
 app.post('/login', (req, res) => {
-  const username = req.body.username;
-  res.cookie('user_id', username)
+  if (!req.body.email || !req.body.password) {
+    console.log("Can't let you in without the creds buddy.");
+  } else {
+    const targetUser = checkUser(req.body.email);
+    if (!targetUser) {
+      console.log(`Nobody with ${req.body.email} exists.`);
+    } else if (targetUser.password === req.body.password) {
+      res.cookie('user_id', targetUser.id);
+    } else {
+      console.log('Wrong password or some other error');
+    }
+  }
   res.redirect('/urls');
 });
 
