@@ -71,7 +71,10 @@ app.get("/hello", (req, res) => {
 
 // must be placed BEFORE the dynamic route with /urls/:shortURL
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 
