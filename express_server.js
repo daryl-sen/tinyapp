@@ -31,7 +31,7 @@ function generateRandomString(stringLength) {
 /* *** ROUTES ******************************************** */
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 
@@ -46,25 +46,12 @@ app.get("/urls", (req, res) => {
 
 
 
-// app.get("/checkcookie", (req, res) => {
-//   const cookieMonster = req.cookies['username'];
-//   res.send(`Here's your cookie name: ${cookieMonster}`);
-// });
-
-
-
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = longURL;
   // https://expressjs.com/en/guide/routing.html
   res.redirect(`/urls/${shortURL}`);
-});
-
-
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 
@@ -120,6 +107,17 @@ app.post('/urls/:shortURL/update', (req, res) => {
   }
   urlDatabase[req.params.shortURL] = req.body.newURL;
   res.redirect('/urls');
+});
+
+
+
+
+app.get('/register', (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.render('urls_register', templateVars)
 });
 
 
