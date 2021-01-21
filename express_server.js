@@ -52,7 +52,6 @@ const getVars = (req) => {
       user,
       urls: urlsForUser(urlDatabase, user.id)
     };
-    console.log(vars);
     return vars;
   } else {
     return {
@@ -81,6 +80,14 @@ const checkUser = function(email) {
   return false; // true -> email in use, false -> email not in use
 };
 
+const checkOwnership = function(target, user) {
+  // console.log(target);
+  if (target['userID'] === user['id']) {
+    return true;
+  }
+  return false;
+}
+
 /* *** ROUTES ******************************************** */
 
 app.get("/", (req, res) => {
@@ -101,6 +108,7 @@ app.post("/urls/new", (req, res) => {
   const shortURL = generateRandomString(6);
   const userID = req.cookies['user_id'];
   urlDatabase[shortURL] = { longURL, userID };
+  console.log('------------------\n', urlDatabase, '\n---------------');
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -120,6 +128,12 @@ app.get("/urls/new", (req, res) => {
 
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
+  const user = users[req.cookies["user_id"]];
+  const target = urlDatabase[req.params.shortURL];
+  if (!user || !target || !checkOwnership(target, user)) {
+    console.log("You do not have the permission to edit a URL that belongs to someone else");
+    return res.redirect('/urls');
+  }
   const templateVars = getVars(req);
   templateVars['target'] = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   res.render("urls_show", templateVars);
@@ -138,8 +152,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 app.post('/urls/:shortURL/delete', (req, res) => {
+  const user = users[req.cookies["user_id"]];
   const target = urlDatabase[req.params.shortURL];
-  if (target === undefined) {
+  if (!user || !target || !checkOwnership(target, user)) {
+    console.log("You do not have the permission to delete a URL that belongs to someone else");
     return res.redirect('/urls');
   }
   delete urlDatabase[req.params.shortURL];
@@ -150,8 +166,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 
 app.post('/urls/:shortURL/update', (req, res) => {
+  const user = users[req.cookies["user_id"]];
   const target = urlDatabase[req.params.shortURL];
   if (target === undefined) {
+    console.log('Could not find this link.')
+    return res.redirect('/urls');
+  } else if (target.userID !== user.id) {
+    console.log('Only the owner of this link can update its contents');
     return res.redirect('/urls');
   }
   urlDatabase[req.params.shortURL] = req.body.newURL;
@@ -183,7 +204,6 @@ app.post('/register', (req, res) => {
     };
     res.cookie('user_id', newUserID);
   }
-
   res.redirect('/urls');
 });
 
