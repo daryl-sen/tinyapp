@@ -11,8 +11,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "aJ48lW"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "aJ48lW"
+  }
 };
 
 const users = {
@@ -28,12 +34,32 @@ const users = {
   }
 };
 
+const urlsForUser = function(urls, userID) {
+  let userURLs = {};
+  for (let url in urls) {
+    if (urls[url].userID === userID) {
+      userURLs[url] = { longURL: urls[url].longURL, userID };
+    }
+  }
+  return userURLs;
+};
+
 const getVars = (req) => {
   // user appears in almost every GET route
-  return {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
-  };
+  const user = users[req.cookies["user_id"]];
+  if (user) {
+    vars = {
+      user,
+      urls: urlsForUser(urlDatabase, user.id)
+    };
+    console.log(vars);
+    return vars;
+  } else {
+    return {
+      user: undefined,
+      urls: []
+    };
+  }
 };
 
 const generateRandomString = function(stringLength) {

@@ -12,34 +12,49 @@
   <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let url in urls) { %>
+    <% if (user) { %>
+      <table class="table">
+        <thead>
           <tr>
-            <td>
-              <%- url %>
-            </td>
-            <td><%- urls[url].longURL %></td>
-            <td>
-              <a href="/urls/<%- url %>">Update</a>
-            </td>
-            <td>
-              <form method="POST" action="/urls/<%- url %>/delete">
-                <input type="submit" value="Delete" />
-              </form>
-            </td>
+            <th scope="col">Short URL</th>
+            <th scope="col">Long URL</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
           </tr>
-        <% } %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% if (Object.keys(urls).length !== 0) { %> 
+            <% for(let url in urls) { %>
+              <tr>
+                <td>
+                  <%- url %>
+                </td>
+                <td><%- urls[url].longURL %></td>
+                <td>
+                  <a href="/urls/<%- url %>">Update</a>
+                </td>
+                <td>
+                  <form method="POST" action="/urls/<%- url %>/delete">
+                    <input type="submit" value="Delete" />
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          <% } else { %>
+            <tr>
+              <td><a href="/urls/new">+ New</a></td>
+              <td>None</td>
+              <td>None</td>
+              <td>None</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>
+        Sorry, you must be <a href="/login">logged in</a> to see your saved links!
+      </p>
+    <% } %>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
