@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
-
+const { urlsForUser, getVars, generateRandomString, checkUser, checkOwnership} = require('./helper_functions');
 
 
 // configure app
@@ -40,58 +40,7 @@ const users = {
   }
 };
 
-const urlsForUser = function(urls, userID) {
-  let userURLs = {};
-  for (let url in urls) {
-    if (urls[url].userID === userID) {
-      userURLs[url] = { longURL: urls[url].longURL, userID };
-    }
-  }
-  return userURLs;
-};
 
-const getVars = (req) => {
-  // user appears in almost every GET route
-  const user = users[req.session.user_id];
-  if (user) {
-    vars = {
-      user,
-      urls: urlsForUser(urlDatabase, user.id)
-    };
-    return vars;
-  } else {
-    return {
-      user: undefined,
-      urls: []
-    };
-  }
-};
-
-const generateRandomString = function(stringLength) {
-  const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
-  let output = '';
-  // generate random number between 1 to the length of randomChars
-  for (let i = 0; i < stringLength; i++) {
-    output += randomChars[Math.floor(Math.random() * randomChars.length)];
-  }
-  return output;
-};
-
-const checkUser = function(email) {
-  for (let userID in users) {
-    if (users[userID].email === email) {
-      return users[userID];
-    }
-  }
-  return false; // true -> email in use, false -> email not in use
-};
-
-const checkOwnership = function(target, user) {
-  if (target['userID'] === user['id']) {
-    return true;
-  }
-  return false;
-}
 
 /* *** ROUTES ******************************************** */
 
@@ -102,7 +51,7 @@ app.get("/", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  const templateVars = getVars(req);
+  const templateVars = getVars(req, urlDatabase, users);
   res.render('urls_index', templateVars);
 });
 
@@ -120,7 +69,7 @@ app.post("/urls/new", (req, res) => {
 
 // must be placed BEFORE the dynamic route with /urls/:shortURL
 app.get("/urls/new", (req, res) => {
-  const templateVars = getVars(req);
+  const templateVars = getVars(req, urlDatabase, users);
   if (!templateVars.user) {
     console.log('You must be logged in to create a new URL');
     return res.redirect('/login');
@@ -138,7 +87,7 @@ app.get("/urls/:shortURL", (req, res) => {
     console.log("You do not have the permission to edit a URL that belongs to someone else");
     return res.redirect('/urls');
   }
-  const templateVars = getVars(req);
+  const templateVars = getVars(req, urlDatabase, users);
   templateVars['target'] = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   res.render("urls_show", templateVars);
 });
@@ -187,7 +136,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
 
 
 app.get('/register', (req, res) => {
-  const templateVars = getVars(req);
+  const templateVars = getVars(req, urlDatabase, users);
   res.render('urls_register', templateVars);
 });
 
@@ -215,7 +164,7 @@ app.post('/register', (req, res) => {
 
 
 app.get('/login', (req, res) => {
-  const templateVars = getVars(req);
+  const templateVars = getVars(req, urlDatabase, users);
   res.render('urls_login', templateVars);
 });
 
