@@ -1,8 +1,9 @@
 // imports
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+const cookieSession = require('cookie-session');
+
 
 
 // configure app
@@ -10,7 +11,10 @@ const PORT = 8080;
 const app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['ddonajiogfadkjnla', 'jkdfsabjdfolafkldasg']
+}));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -48,7 +52,7 @@ const urlsForUser = function(urls, userID) {
 
 const getVars = (req) => {
   // user appears in almost every GET route
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   if (user) {
     vars = {
       user,
@@ -83,7 +87,6 @@ const checkUser = function(email) {
 };
 
 const checkOwnership = function(target, user) {
-  // console.log(target);
   if (target['userID'] === user['id']) {
     return true;
   }
@@ -108,9 +111,8 @@ app.get("/urls", (req, res) => {
 app.post("/urls/new", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(6);
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   urlDatabase[shortURL] = { longURL, userID };
-  console.log('------------------\n', urlDatabase, '\n---------------');
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -130,7 +132,7 @@ app.get("/urls/new", (req, res) => {
 
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   if (!user || !target || !checkOwnership(target, user)) {
     console.log("You do not have the permission to edit a URL that belongs to someone else");
@@ -154,7 +156,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   if (!user || !target || !checkOwnership(target, user)) {
     console.log("You do not have the permission to delete a URL that belongs to someone else");
@@ -168,7 +170,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 
 app.post('/urls/:shortURL/update', (req, res) => {
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   if (target === undefined) {
     console.log('Could not find this link.')
@@ -205,8 +207,7 @@ app.post('/register', (req, res) => {
       email: req.body.email,
       password: newUserPw
     };
-    console.log(users);
-    res.cookie('user_id', newUserID);
+    req.session.user_id = newUserID;
   }
   res.redirect('/urls');
 });
@@ -228,7 +229,7 @@ app.post('/login', (req, res) => {
     if (!targetUser) {
       console.log(`Nobody with ${req.body.email} exists.`);
     } else if (bcrypt.compareSync(req.body.password, targetUser.password)) {
-      res.cookie('user_id', targetUser.id);
+      req.session.user_id = targetUser.id;
     } else {
       console.log('Wrong password or some other error');
     }
@@ -239,7 +240,7 @@ app.post('/login', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  req.session.user_id = null;
   res.redirect('/urls');
 });
 
