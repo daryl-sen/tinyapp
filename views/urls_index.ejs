@@ -6,7 +6,7 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
+  <title>TinyApp Homepage</title>
 </head>
 <body>
   <%- include('partials/_header') %>
@@ -25,14 +25,14 @@
         <% for(let url in urls) { %>
           <tr>
             <td>
-              <%= url %>
+              <%- url %>
             </td>
-            <td><%= urls[url] %></td>
+            <td><%- urls[url] %></td>
             <td>
-              <a href="/urls/<%= url %>">Update</a>
+              <a href="/urls/<%- url %>">Update</a>
             </td>
             <td>
-              <form method="POST" action="/urls/<%= url %>/delete">
+              <form method="POST" action="/urls/<%- url %>/delete">
                 <input type="submit" value="Delete" />
               </form>
             </td>

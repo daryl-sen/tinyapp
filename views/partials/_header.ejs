@@ -11,9 +11,8 @@
       </div>
     </div>
     <% if(!user) { %>
-    <form action="/login" method="GET">
-      <input type="submit" value="Log In">
-    </form>
+    <a class="nav-item nav-link" href="/register">Register</a>
+    <a class="nav-item nav-link" href="/login">Login</a>
     <% } else { %>
       Welcome,&nbsp;<b><%- user.email %></b>! &nbsp;
       <form action="/logout" method='POST'>

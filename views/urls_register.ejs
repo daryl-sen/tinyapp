@@ -15,17 +15,15 @@
     <%- include('partials/_header') %>
 
     <main style="margin: 1em;">
-      <h3>Create TinyURL</h3>
+      <h3>Register</h3>
       <form action="/register" method="POST">
         <div class="form-group mb-2">
           <label for="email">Email Address</label>
-          <input type="email" name="email">
-          <br>
+          <input type="email" name="email" class="form-control">
           <label for="password" name="password">Password</label>
-          <input type="password" name="password">
+          <input type="password" name="password" class="form-control">
           <br>
-          <input type="submit" value='Sign Up'>
-          
+          <input type="submit" value='Sign Up' class="btn btn-primary">
         </div>
       </form>
     </main>
