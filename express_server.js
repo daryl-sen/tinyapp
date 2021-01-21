@@ -2,6 +2,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+
 
 // configure app
 const PORT = 8080;
@@ -197,11 +199,13 @@ app.post('/register', (req, res) => {
     console.log('Email address already in use');
   } else {
     const newUserID = generateRandomString(6);
+    const newUserPw = bcrypt.hashSync(req.body.password, 10);
     users[newUserID] = {
       id: newUserID,
       email: req.body.email,
-      password: req.body.password
+      password: newUserPw
     };
+    console.log(users);
     res.cookie('user_id', newUserID);
   }
   res.redirect('/urls');
@@ -223,7 +227,7 @@ app.post('/login', (req, res) => {
     const targetUser = checkUser(req.body.email);
     if (!targetUser) {
       console.log(`Nobody with ${req.body.email} exists.`);
-    } else if (targetUser.password === req.body.password) {
+    } else if (bcrypt.compareSync(req.body.password, targetUser.password)) {
       res.cookie('user_id', targetUser.id);
     } else {
       console.log('Wrong password or some other error');
