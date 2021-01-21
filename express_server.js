@@ -147,7 +147,6 @@ app.post('/register', (req, res) => {
     console.log('No email or password provided');
   } else if (checkUser(req.body.email)) {
     console.log('Email address already in use');
-    console.log(users);
   } else {
     const newUserID = generateRandomString(6);
     users[newUserID] = {
@@ -156,7 +155,6 @@ app.post('/register', (req, res) => {
       password: req.body.password
     };
     res.cookie('user_id', newUserID);
-    console.log(users);
   }
 
   res.redirect('/urls');
