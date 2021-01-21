@@ -14,7 +14,7 @@
         <h5 class="card-title">TinyURL for: <%- target.longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%- target.shortURL %>"><%- target.shortURL %></a></p>
         <hr>
-        <form action="/urls/<%- target.shortURL %>/update" method="POST">
+        <form action="/urls/<%- target.shortURL %>?_method=PATCH" method="POST">
           <input type="text" name="newURL" value="<%- target.longURL %>" placeholder="http://" />
           <input type="submit" />
         </form>

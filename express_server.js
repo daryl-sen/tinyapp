@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 const { urlsForUser, getVars, generateRandomString, getUserByEmail, checkOwnership} = require('./helpers');
-
+var methodOverride = require('method-override');
 
 // configure app
 const PORT = 8080;
@@ -15,6 +15,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['ddonajiogfadkjnla', 'jkdfsabjdfolafkldasg']
 }));
+app.use(methodOverride('_method'));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -104,7 +105,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-app.post('/urls/:shortURL/delete', (req, res) => {
+app.delete('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   if (!user || !target || !checkOwnership(target, user)) {
@@ -118,7 +119,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 
 
-app.post('/urls/:shortURL/update', (req, res) => {
+app.patch('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   if (target === undefined) {
