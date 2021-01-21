@@ -1,7 +1,7 @@
 // imports
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 
 // configure app
 const PORT = 8080;
@@ -15,20 +15,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
-function generateRandomString(stringLength) {
+const generateRandomString = function(stringLength) {
   const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
   let output = '';
   // generate random number between 1 to the length of randomChars
@@ -36,16 +36,16 @@ function generateRandomString(stringLength) {
     output += randomChars[Math.floor(Math.random() * randomChars.length)];
   }
   return output;
-}
+};
 
-function checkUser(email) {
+const checkUser = function(email) {
   for (let userID in users) {
     if (users[userID].email === email) {
-      return users[userID]; 
+      return users[userID];
     }
   }
   return false; // true -> email in use, false -> email not in use
-}
+};
 
 /* *** ROUTES ******************************************** */
 
@@ -143,10 +143,6 @@ app.get('/register', (req, res) => {
 
 
 app.post('/register', (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
-  };
   if (!req.body.email || !req.body.password) {
     console.log('No email or password provided');
   } else if (checkUser(req.body.email)) {
@@ -172,7 +168,7 @@ app.get('/login', (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
     urls: urlDatabase
-  };  
+  };
   res.render('urls_login', templateVars);
 });
 
