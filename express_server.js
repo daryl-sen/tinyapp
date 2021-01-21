@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
-const { urlsForUser, getVars, generateRandomString, checkUser, checkOwnership} = require('./helper_functions');
+const { urlsForUser, getVars, generateRandomString, getUserByEmail, checkOwnership} = require('./helpers');
 
 
 // configure app
@@ -128,7 +128,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
     console.log('Only the owner of this link can update its contents');
     return res.redirect('/urls');
   }
-  urlDatabase[req.params.shortURL] = req.body.newURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect('/urls');
 });
 
@@ -146,7 +146,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   if (!req.body.email || !req.body.password) {
     console.log('No email or password provided');
-  } else if (checkUser(req.body.email)) {
+  } else if (getUserByEmail(req.body.email, users)) {
     console.log('Email address already in use');
   } else {
     const newUserID = generateRandomString(6);
@@ -174,7 +174,7 @@ app.post('/login', (req, res) => {
   if (!req.body.email || !req.body.password) {
     console.log("Can't let you in without the creds buddy.");
   } else {
-    const targetUser = checkUser(req.body.email);
+    const targetUser = getUserByEmail(req.body.email, users);
     if (!targetUser) {
       console.log(`Nobody with ${req.body.email} exists.`);
     } else if (bcrypt.compareSync(req.body.password, targetUser.password)) {

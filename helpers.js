@@ -35,7 +35,7 @@ const generateRandomString = function(stringLength) {
   return output;
 };
 
-const checkUser = function(email, database) {
+const getUserByEmail = function(email, database) {
   for (let userID in database) {
     if (database[userID].email === email) {
       return database[userID];
@@ -55,6 +55,6 @@ module.exports = {
   urlsForUser,
   getVars,
   generateRandomString,
-  checkUser,
+  getUserByEmail,
   checkOwnership
 }
