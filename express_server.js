@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
-const { urlsForUser, getVars, generateRandomString, getUserByEmail, checkOwnership} = require('./helpers');
+const { getVars, generateRandomString, getUserByEmail, checkOwnership} = require('./helpers');
 var methodOverride = require('method-override');
 
 // configure app
@@ -17,6 +17,8 @@ app.use(cookieSession({
 }));
 app.use(methodOverride('_method'));
 
+
+
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -27,6 +29,8 @@ const urlDatabase = {
     userID: "aJ48lW"
   }
 };
+
+
 
 const users = {
   "userRandomID": {
@@ -46,13 +50,23 @@ const users = {
 /* *** ROUTES ******************************************** */
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  const user = users[req.session.user_id];
+  if (!user) {
+    return res.redirect('/login');
+  }
+  return res.redirect("/urls");
 });
 
 
 
 app.get("/urls", (req, res) => {
   const templateVars = getVars(req, urlDatabase, users);
+  if (!templateVars.user) {
+    // pass an error message to display on the template
+    templateVars['messageTitle'] = 'Login Required';
+    templateVars['message'] = 'Sorry, you have to be <a href="/login">logged in</a> to view this page.';
+    return res.render('urls_error', templateVars);
+  }
   res.render('urls_index', templateVars);
 });
 
@@ -60,8 +74,11 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls/new", (req, res) => {
   const longURL = req.body.longURL;
-  const shortURL = generateRandomString(6);
   const userID = req.session.user_id;
+  const shortURL = generateRandomString(6);
+  if (!userID) {
+    return res.redirect('/login');
+  }
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -194,6 +211,13 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
+
+app.post('*', (req, res) => {
+  const templateVars = getVars(req, urlDatabase, users);
+  templateVars['messageTitle'] = 'Page Not Found';
+  templateVars['message'] = 'The page you requested could not be found, please check for any typos.';
+  res.render('urls_error', templateVars);
+});
 
 
 app.listen(PORT, () => {
