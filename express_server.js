@@ -11,8 +11,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
 
 const users = {
@@ -70,11 +70,11 @@ app.get("/urls", (req, res) => {
 
 
 
-app.post("/urls", (req, res) => {
+app.post("/urls/new", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = longURL;
-  // https://expressjs.com/en/guide/routing.html
+  const userID = req.cookies['user_id'];
+  urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -95,7 +95,7 @@ app.get("/urls/new", (req, res) => {
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = getVars(req);
-  templateVars['longURL'] = urlDatabase[req.params.shortURL];
+  templateVars['target'] = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   res.render("urls_show", templateVars);
 });
 
@@ -106,7 +106,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (target === undefined) {
     return res.redirect('/urls');
   }
-  res.redirect(target);
+  res.redirect(target.longURL);
 });
 
 
