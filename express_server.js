@@ -28,6 +28,14 @@ const users = {
   }
 };
 
+const getVars = (req) => {
+  // user appears in almost every GET route
+  return {
+    user: users[req.cookies["user_id"]],
+    urls: urlDatabase
+  };
+};
+
 const generateRandomString = function(stringLength) {
   const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
   let output = '';
@@ -56,10 +64,7 @@ app.get("/", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
-  };
+  const templateVars = getVars(req);
   res.render('urls_index', templateVars);
 });
 
@@ -77,9 +82,11 @@ app.post("/urls", (req, res) => {
 
 // must be placed BEFORE the dynamic route with /urls/:shortURL
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
+  const templateVars = getVars(req);
+  if (!templateVars.user) {
+    console.log('You must be logged in to create a new URL');
+    return res.redirect('/login');
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -87,11 +94,8 @@ app.get("/urls/new", (req, res) => {
 
 // dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
-  };
+  const templateVars = getVars(req);
+  templateVars['longURL'] = urlDatabase[req.params.shortURL];
   res.render("urls_show", templateVars);
 });
 
@@ -132,10 +136,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
 
 
 app.get('/register', (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
-  };
+  const templateVars = getVars(req);
   res.render('urls_register', templateVars);
 });
 
@@ -163,10 +164,7 @@ app.post('/register', (req, res) => {
 
 
 app.get('/login', (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlDatabase
-  };
+  const templateVars = getVars(req);
   res.render('urls_login', templateVars);
 });
 
