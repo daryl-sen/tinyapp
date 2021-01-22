@@ -47,19 +47,19 @@ const getUserByEmail = function(email, database) {
 const checkOwnership = function(target, user) {
   let messageTitle;
   let message;
-  let statuscode;
+  let statusCode;
   if (!user) {
     messageTitle = 'Login Required';
-    message = 'Sorry but you have to be <a href="/login">logged in</a> to create a new link.';
-    statuscode = 401;
+    message = 'Sorry but you have to be <a href="/login">logged in</a> to work on saved links.';
+    statusCode = 401;
   } else if (!target) {
     messageTitle = 'Short Link Not Found';
     message = 'The short link you requested could not be found.';
-    statuscode = 404;
+    statusCode = 404;
   } else if (target.userID !== user.id) {
     messageTitle = 'Unauthorized';
     message = 'Sorry but you cannot make changes to a link that does not belong to you.';
-    statuscode = 401;
+    statusCode = 401;
   } else {
     return false;
   }
