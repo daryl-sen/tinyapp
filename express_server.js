@@ -18,7 +18,7 @@ app.use(cookieSession({
 app.use(methodOverride('_method'));
 
 
-
+// pseudo databases
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -29,8 +29,6 @@ const urlDatabase = {
     userID: "aJ48lW"
   }
 };
-
-
 
 const users = {
   "userRandomID": {
@@ -76,7 +74,6 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = getVars(req, urlDatabase, users);
   if (!templateVars.user) {
-    console.log('You must be logged in to create a new URL');
     return res.redirect('/login');
   }
   res.render("urls_new", templateVars);
@@ -84,24 +81,16 @@ app.get("/urls/new", (req, res) => {
 
 
 
-// dynamic routing, use ":"
 app.get("/urls/:shortURL", (req, res) => {
   const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
   const templateVars = getVars(req, urlDatabase, users);
 
-  if (!user) {
-    templateVars['messageTitle'] = 'Login Required';
-    templateVars['message'] = 'Sorry but you have to be <a href="/login">logged in</a> to create a new link.';
-    return res.render('urls_error', templateVars);
-  } else if (!target) {
-    templateVars['messageTitle'] = 'Short Link Not Found';
-    templateVars['message'] = 'The short link you requested could not be found.';
-    return res.render('urls_error', templateVars);
-  } else if (target.userID !== user.id) {
-    templateVars['messageTitle'] = 'Unauthorized';
-    templateVars['message'] = 'Sorry but you cannot edit a link that does not belong to you.';
-    return res.render('urls_error', templateVars);
+  const errorMessage = checkOwnership(user, target);
+  if (errorMessage) {
+    templateVars['messageTitle'] = errorMessage.title;
+    templateVars['message'] = errorMessage.content;
+    return res.render('urls_error');
   }
 
   templateVars['target'] = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
@@ -143,17 +132,10 @@ app.patch('/urls/:shortURL', (req, res) => {
   const target = urlDatabase[req.params.shortURL];
   const templateVars = getVars(req, urlDatabase, users);
   
-  if (!user) {
-    templateVars['messageTitle'] = 'Login Required';
-    templateVars['message'] = 'Sorry but you have to be <a href="/login">logged in</a> to create a new link.';
-    return res.render('urls_error', templateVars);
-  } else if (!target) {
-    templateVars['messageTitle'] = 'Short Link Not Found';
-    templateVars['message'] = 'The short link you requested could not be found.';
-    return res.render('urls_error', templateVars);
-  } else if (target.userID !== user.id) {
-    templateVars['messageTitle'] = 'Unauthorized';
-    templateVars['message'] = 'Sorry but you cannot edit a link that does not belong to you.';
+  const errorMessage = checkOwnership(user, target);
+  if (errorMessage) {
+    templateVars['messageTitle'] = errorMessage.title;
+    templateVars['message'] = errorMessage.content;
     return res.render('urls_error', templateVars);
   }
 
@@ -167,18 +149,11 @@ app.delete('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
 
-  if (!user) {
-    templateVars['messageTitle'] = 'Login Required';
-    templateVars['message'] = 'Sorry but you have to be <a href="/login">logged in</a> to create a new link.';
-    return res.render('urls_error', templateVars);
-  } else if (!target) {
-    templateVars['messageTitle'] = 'Short Link Not Found';
-    templateVars['message'] = 'The short link you requested could not be found.';
-    return res.render('urls_error', templateVars);
-  } else if (target.userID !== user.id) {
-    templateVars['messageTitle'] = 'Unauthorized';
-    templateVars['message'] = 'Sorry but you cannot edit a link that does not belong to you.';
-    return res.render('urls_error', templateVars);
+  const errorMessage = checkOwnership(user, target);
+  if (errorMessage) {
+    templateVars['messageTitle'] = errorMessage.title;
+    templateVars['message'] = errorMessage.content;
+    return res.render('urls_error');
   }
 
   delete urlDatabase[req.params.shortURL];

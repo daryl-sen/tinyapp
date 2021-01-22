@@ -45,10 +45,25 @@ const getUserByEmail = function(email, database) {
 };
 
 const checkOwnership = function(target, user) {
-  if (target['userID'] === user['id']) {
-    return true;
+  let messageTitle;
+  let message;
+  if (!user) {
+    messageTitle = 'Login Required';
+    message = 'Sorry but you have to be <a href="/login">logged in</a> to create a new link.';
+  } else if (!target) {
+    messageTitle = 'Short Link Not Found';
+    message = 'The short link you requested could not be found.';
+  } else if (target.userID !== user.id) {
+    messageTitle = 'Unauthorized';
+    message = 'Sorry but you cannot make changes to a link that does not belong to you.';
+  } else {
+    return false;
   }
-  return false;
+  // console.log(messageTitle);
+  return {
+    title: messageTitle,
+    content: message
+  };
 }
 
 module.exports = {
