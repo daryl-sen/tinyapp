@@ -12,7 +12,7 @@ const getVars = (req, urlDatabase, usersDatabase) => {
   // user appears in almost every GET route
   const user = usersDatabase[req.session.user_id];
   if (user) {
-    vars = {
+    const vars = {
       user,
       urls: urlsForUser(urlDatabase, user.id)
     };
@@ -69,7 +69,7 @@ const checkOwnership = function(target, user) {
     content: message,
     statusCode,
   };
-}
+};
 
 module.exports = {
   urlsForUser,
@@ -77,4 +77,4 @@ module.exports = {
   generateRandomString,
   getUserByEmail,
   checkOwnership
-}
+};
