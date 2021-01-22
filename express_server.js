@@ -86,11 +86,11 @@ app.get("/urls/:shortURL", (req, res) => {
   const target = urlDatabase[req.params.shortURL];
   const templateVars = getVars(req, urlDatabase, users);
 
-  const errorMessage = checkOwnership(user, target);
+  const errorMessage = checkOwnership(target, user);
   if (errorMessage) {
     templateVars['messageTitle'] = errorMessage.title;
     templateVars['message'] = errorMessage.content;
-    return res.render('urls_error');
+    return res.render('urls_error', templateVars);
   }
 
   templateVars['target'] = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
@@ -132,7 +132,7 @@ app.patch('/urls/:shortURL', (req, res) => {
   const target = urlDatabase[req.params.shortURL];
   const templateVars = getVars(req, urlDatabase, users);
   
-  const errorMessage = checkOwnership(user, target);
+  const errorMessage = checkOwnership(target, user);
   if (errorMessage) {
     templateVars['messageTitle'] = errorMessage.title;
     templateVars['message'] = errorMessage.content;
@@ -149,11 +149,11 @@ app.delete('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const target = urlDatabase[req.params.shortURL];
 
-  const errorMessage = checkOwnership(user, target);
+  const errorMessage = checkOwnership(target, user);
   if (errorMessage) {
     templateVars['messageTitle'] = errorMessage.title;
     templateVars['message'] = errorMessage.content;
-    return res.render('urls_error');
+    return res.render('urls_error', templateVars);
   }
 
   delete urlDatabase[req.params.shortURL];
