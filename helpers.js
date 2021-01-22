@@ -10,7 +10,7 @@ const urlsForUser = function(database, userID) {
 
 const getVars = (req, urlDatabase, usersDatabase) => {
   // user appears in almost every GET route
-  const user = usersDatabase[req.session.user_id];
+  const user = usersDatabase[req.session.userID];
   if (user) {
     const vars = {
       user,
