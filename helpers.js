@@ -1,3 +1,4 @@
+// finds all the URLs created by the user
 const urlsForUser = function(database, userID) {
   let userURLs = {};
   for (let url in database) {
@@ -8,6 +9,9 @@ const urlsForUser = function(database, userID) {
   return userURLs;
 };
 
+
+
+// create variables that are frequently passed into templates
 const getVars = (req, urlDatabase, usersDatabase) => {
   // user appears in almost every GET route
   const user = usersDatabase[req.session.userID];
@@ -25,6 +29,9 @@ const getVars = (req, urlDatabase, usersDatabase) => {
   }
 };
 
+
+
+// generate a random alphanumeric string
 const generateRandomString = function(stringLength) {
   const randomChars = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let output = '';
@@ -35,6 +42,9 @@ const generateRandomString = function(stringLength) {
   return output;
 };
 
+
+
+// return a user object given an email address
 const getUserByEmail = function(email, database) {
   for (let userID in database) {
     if (database[userID].email === email) {
@@ -44,6 +54,9 @@ const getUserByEmail = function(email, database) {
   return false; // true -> email in use, false -> email not in use
 };
 
+
+
+// check to see if the link being modified belongs to the user who is trying to modify it
 const checkOwnership = function(target, user) {
   let messageTitle;
   let message;
@@ -63,7 +76,6 @@ const checkOwnership = function(target, user) {
   } else {
     return false;
   }
-  // console.log(messageTitle);
   return {
     title: messageTitle,
     content: message,

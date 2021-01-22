@@ -87,6 +87,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const target = urlDatabase[req.params.shortURL];
   const templateVars = getVars(req, urlDatabase, users);
 
+  // check and see if the target link belongs to the user
   const errorMessage = checkOwnership(target, user);
   if (errorMessage) {
     templateVars['messageTitle'] = errorMessage.title;
@@ -240,6 +241,7 @@ app.post('/logout', (req, res) => {
 
 
 
+// 'catch-all' link, used to handle 404s
 app.get('*', (req, res) => {
   const templateVars = getVars(req, urlDatabase, users);
   templateVars['messageTitle'] = 'Page Not Found';
