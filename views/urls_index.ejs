@@ -6,7 +6,7 @@
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp Homepage</title>
+  <title>TinyApp - Homepage</title>
 </head>
 <body>
   <%- include('partials/_header') %>
@@ -30,11 +30,11 @@
               </td>
               <td><%- urls[url].longURL %></td>
               <td>
-                <a href="/urls/<%- url %>">Update</a>
+                <a class="btn btn-outline-primary" href="/urls/<%- url %>">Update</a>
               </td>
               <td>
                 <form method="POST" action="/urls/<%- url %>?_method=DELETE">
-                  <input type="submit" value="Delete" />
+                  <input type="submit" value="Delete" class="btn btn-outline-danger" />
                 </form>
               </td>
             </tr>

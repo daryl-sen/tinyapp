@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 const { getVars, generateRandomString, getUserByEmail, checkOwnership} = require('./helpers');
-var methodOverride = require('method-override');
+const methodOverride = require('method-override');
 
 // configure app
 const PORT = 8080;

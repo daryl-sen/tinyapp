@@ -26,7 +26,7 @@ const getVars = (req, urlDatabase, usersDatabase) => {
 };
 
 const generateRandomString = function(stringLength) {
-  const randomChars = '1234567890abcdefghijklmnopqrstuvwxyz';
+  const randomChars = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let output = '';
   // generate random number between 1 to the length of randomChars
   for (let i = 0; i < stringLength; i++) {

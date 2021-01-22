@@ -11,8 +11,10 @@
       </div>
     </div>
     <% if(!user) { %>
-    <a class="nav-item nav-link" href="/register">Register</a>
-    <a class="nav-item nav-link" href="/login">Login</a>
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="/register">Register</a>
+      <a class="nav-item nav-link" href="/login">Login</a>
+    </div>
     <% } else { %>
       Welcome,&nbsp;<b><%- user.email %></b>! &nbsp;
       <form action="/logout" method='POST'>
